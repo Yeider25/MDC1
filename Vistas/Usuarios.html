@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Estilo3.css">
+    <title>Usuario</title>
+</head>
+
+<body>
+    <div class="xd">
+        <h1 id="Id_usuario">Hola señor usuario!</h1>
+        <button id="Servicios_disponibles">Servicios disponibles</button>
+        <button id="Servicios_inscritos">Ver servicios inscritos</button>
+        <button id="Cerrar_sesion">Cerrar sesión</button>
+        <div id="Contenedor_servicios" style="display: none;">
+            <form id="FormularioSeleccionServicio" style="margin: 30px;">
+                <ul id="lista_servicios"></ul>
+                <input type="datetime-local" id="fechaHora" name="fecha">
+                <button type="submit">Guardar</button>
+            </form>
+
+            <div id="Solicitudes_contenedor" style="display: none;">
+                <h2>Servicios inscritos:</h2>
+                <ul id="Lista_solicitudes"></ul>
+            </div>
+            <form id="FormularioActualizarDatos">
+                <label for="nuevoDocumento">Nuevo Documento de Identidad:</label>
+                <input type="text" id="nuevoDocumento" name="nuevoDocumento" required>
+                <button type="submit">Actualizar Documento de Identidad</button>
+            </form>
+
+            <form id="FormularioActualizarServicio">
+                <label for="nuevoServicio">Nuevo Servicio:</label>
+                <input type="datetime-local" id="nuevaFechaHora" name="nuevaFechaHora">
+                <button type="submit">Actualizar Servicio</button>
+            </form>
+
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const params = new URLSearchParams(window.location.search);
+                    const usuario = params.get('usuario');
+                    document.getElementById('Id_usuario').textContent = `Bienvenido: ${usuario}`;
+
+                    const Contenedor_servicios = document.getElementById('Contenedor_servicios');
+                    const FormularioSeleccionServicio = document.getElementById('FormularioSeleccionServicio');
+                    const Servicios_disponibles = document.getElementById('Servicios_disponibles');
+                    const Servicios_inscritos = document.getElementById('Servicios_inscritos');
+                    const Solicitudes_contenedor = document.getElementById('Solicitudes_contenedor');
+                    const Lista_solicitudes = document.getElementById('Lista_solicitudes');
+                    const Cerrar_sesion = document.getElementById('Cerrar_sesion');
+                    const FormularioActualizarDatos = document.getElementById('FormularioActualizarDatos');
+                    const FormularioActualizarServicio = document.getElementById('FormularioActualizarServicio');
+
+
+
+
+                    let visibleServicios = false;
+                    let visibleSolicitudes = false;
+
+
+                    FormularioActualizarDatos.addEventListener('submit', async(event) => {
+                        event.preventDefault();
+                        const nuevoDocumento = FormularioActualizarDatos.elements['nuevoDocumento'].value;
+                        const xhrActualizarDocumento = new XMLHttpRequest();
+                        xhrActualizarDocumento.open('POST', '/actualizar-documento-identidad', true);
+                        xhrActualizarDocumento.setRequestHeader('Content-Type', 'application/json');
+                        xhrActualizarDocumento.onreadystatechange = function() {
+                            if (xhrActualizarDocumento.readyState === 4) {
+                                if (xhrActualizarDocumento.status === 200) {
+                                    alert('Documento de identidad actualizado correctamente');
+                                } else {
+                                    console.error('Error al actualizar documento de identidad');
+                                }
+                            }
+                        };
+                        const data = {
+                            usuario,
+                            nuevoDocumento
+                        };
+                        xhrActualizarDocumento.send(JSON.stringify(data));
+                    });
+
+                    FormularioActualizarServicio.addEventListener('submit', async(event) => {
+                        event.preventDefault();
+                        const nuevaFechaHora = FormularioActualizarServicio.elements['nuevaFechaHora'].value;
+                        const xhrActualizarServicio = new XMLHttpRequest();
+                        xhrActualizarServicio.open('POST', '/actualizar-servicio', true);
+                        xhrActualizarServicio.setRequestHeader('Content-Type', 'application/json');
+                        xhrActualizarServicio.onreadystatechange = function() {
+                            if (xhrActualizarServicio.readyState === 4) {
+                                if (xhrActualizarServicio.status === 200) {
+                                    alert('Servicio actualizado correctamente');
+                                } else {
+                                    console.error('Error al actualizar servicio');
+                                }
+                            }
+                        };
+                        const data = {
+                            usuario,
+                            nuevaFechaHora
+                        };
+                        xhrActualizarServicio.send(JSON.stringify(data));
+                    });
+
+
+                    Servicios_disponibles.addEventListener('click', () => {
+                        if (visibleServicios) {
+                            Contenedor_servicios.style.display = 'none';
+                        } else {
+                            const xhr = new XMLHttpRequest();
+                            xhr.open('POST', '/obtener-servicios-usuario', true);
+                            xhr.setRequestHeader('Content-Type', 'application/json');
+                            xhr.onreadystatechange = function() {
+                                if (xhr.readyState === 4) {
+                                    if (xhr.status === 200) {
+                                        const data = JSON.parse(xhr.responseText);
+                                        lista_servicios.innerHTML = data.servicios.map(servicio => `
+                                <label><input type="checkbox" name="servicios" value="${servicio}"> ${servicio}</label>`).join('');
+                                        Contenedor_servicios.style.display = 'block';
+                                    } else {
+                                        console.error('Error al obtener servicio');
+                                    }
+                                }
+                            };
+                            xhr.send(JSON.stringify({
+                                usuario
+                            }));
+                        }
+                        visibleServicios = !visibleServicios;
+                    });
+
+                    Servicios_inscritos.addEventListener('click', () => {
+                        if (visibleSolicitudes) {
+                            Solicitudes_contenedor.style.display = 'none';
+                        } else {
+                            const xhr = new XMLHttpRequest();
+                            xhr.open('POST', '/obtener-solicitudes-usuario', true);
+                            xhr.setRequestHeader('Content-Type', 'application/json');
+                            xhr.onreadystatechange = function() {
+                                if (xhr.readyState === 4) {
+                                    if (xhr.status === 200) {
+                                        const data = JSON.parse(xhr.responseText);
+                                        Lista_solicitudes.innerHTML = data.solicitudes.map(solicitud => `
+                                    <li>
+                                        ID: ${solicitud.ID_solicitud}, 
+                                        Fecha: ${solicitud.Fecha}, 
+                                        Servicio: ${solicitud.Nombre}
+                                        <button class="btn-borrar-solicitud" data-id="${solicitud.ID_solicitud}">Eliminar Solicitud</button>
+                                    </li>
+                                `).join('');
+                                        Solicitudes_contenedor.style.display = 'block';
+                                    } else {
+                                        console.error('Error al obtener solicitudes');
+                                    }
+                                }
+                            };
+                            xhr.send(JSON.stringify({
+                                usuario
+                            }));
+                        }
+                        visibleSolicitudes = !visibleSolicitudes;
+                    });
+
+                    FormularioSeleccionServicio.addEventListener('submit', async(event) => {
+                        event.preventDefault();
+                        const serviciosSeleccionados = Array.from(FormularioSeleccionServicio.elements['servicios'])
+                            .filter(checkbox => checkbox.checked)
+                            .map(checkbox => checkbox.value);
+                        const fechaHora = FormularioSeleccionServicio.elements['fecha'].value;
+                        const xhrGuardar = new XMLHttpRequest();
+                        xhrGuardar.open('POST', '/guardar-servicios-usuario', true);
+                        xhrGuardar.setRequestHeader('Content-Type', 'application/json');
+                        xhrGuardar.onreadystatechange = function() {
+                            if (xhrGuardar.readyState === 4) {
+                                if (xhrGuardar.status === 201) {
+                                    alert('Servicios guardados correctamente');
+                                } else {
+                                    console.error('Error al guardar servicios');
+                                }
+                            }
+                        };
+                        const data = {
+                            usuario,
+                            servicios: serviciosSeleccionados,
+                            fecha: fechaHora
+                        };
+                        xhrGuardar.send(JSON.stringify(data));
+                    });
+
+                    document.addEventListener('click', (event) => {
+                        if (event.target.classList.contains('btn-borrar-solicitud')) {
+                            const solicitudId = event.target.dataset.id;
+                            const confirmarBorrado = confirm('¿Estás seguro de que deseas borrar este Servicio?');
+                            if (confirmarBorrado) {
+                                const xhrBorrar = new XMLHttpRequest();
+                                xhrBorrar.open('POST', '/borrar-solicitud', true);
+                                xhrBorrar.setRequestHeader('Content-Type', 'application/json');
+                                xhrBorrar.onreadystatechange = function() {
+                                    if (xhrBorrar.readyState === 4) {
+                                        if (xhrBorrar.status === 200) {
+                                            alert('Solicitud borrada correctamente');
+                                            Servicios_inscritos.click();
+                                        } else {
+                                            console.error('Error al borrar solicitud');
+                                        }
+                                    }
+                                };
+                                xhrBorrar.send(JSON.stringify({
+                                    solicitudId
+                                }));
+                            }
+                        }
+                    });
+                    window.onload = function() {
+                        window.history.forward();
+                    };
+                    window.onpageshow = function(hola) {
+                        if (hola.persisted) {
+                            window.location.reload();
+                        }
+                    }
+                    Cerrar_sesion.addEventListener('click', () => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('POST', '/cerrar-sesion', true);
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    window.location.href = 'Inicio.html';
+                                } else {
+                                    console.error('Error al cerrar sesión');
+                                }
+                            }
+                        };
+                        xhr.send(JSON.stringify({
+                            usuario
+                        }));
+                    });
+                });
+            </script>
+</body>
+
+</html>

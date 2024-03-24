@@ -1,0 +1,56 @@
+App.JS:
+app.post('/cerrar-sesion', (req, res) => {
+    req.session.destroy((error) => {
+            if (error) {
+                console.error('Error Cerrar Sesion', err);
+                res.status(500).send('Error al Cerrar Sesion')
+            } else {
+                res.status(200).send('Sesion Cerrada')
+            }
+        })
+        /* res.status(200).send('Sesión cerrada correctamente'); */
+});
+
+Admin.html:
+            Cerrar_sesion.addEventListener('click', () => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/cerrar-sesion', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            window.location.href = 'Inicio.html';
+                        } else {
+                            console.error('Error al cerrar sesión');
+                        }
+                    }
+                };
+                xhr.send(JSON.stringify({
+
+                }));
+
+Usuario.html:
+                window.onload=function(){
+                    window.history.forward();
+                };
+                window.onpageshow=function(hola){
+                    if(hola.persisted){
+                        window.location.reload();
+                    }
+                }
+                Cerrar_sesion.addEventListener('click', () => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/cerrar-sesion', true);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4) {
+                            if (xhr.status === 200) {
+                                window.location.href = 'Inicio.html';
+                            } else {
+                                console.error('Error al cerrar sesión');
+                            }
+                        }
+                    };
+                    xhr.send(JSON.stringify({
+                        usuario
+                    }));

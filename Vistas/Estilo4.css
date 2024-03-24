@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+h1,
+h2 {
+    color: #333;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+button {
+    display: inline-block;
+    color: #fff;
+    background-color: #333;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+#Contenedor_manzanas_registradas,
+#Contenedor_servicios_registrados,
+#Contenedor_solicitudes_registradas,
+#Contenedor_usuarios_registrados {
+    background-color: #fff;
+    padding: 20px;
+    margin: 10px 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+li {
+    background-color: #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.btn-borrar-manzana,
+.btn-editar-manzana,
+.btn-guardar-cambios-manzana,
+.btn-borrar-servicio,
+.btn-editar-servicio,
+.btn-guardar-cambios-servicio,
+.btn-borrar-solicitud,
+.btn-editar-solicitud,
+.btn-guardar-cambios-solicitud,
+.btn-borrar-usuario,
+.btn-editar-usuario,
+.btn-guardar-cambios-usuario {
+    background-color: #f44336;
+}
+
+.btn-editar-manzana,
+.btn-editar-servicio,
+.btn-editar-solicitud,
+.btn-editar-usuario {
+    background-color: #ff9800;
+}
+
+.btn-guardar-cambios-manzana,
+.btn-guardar-cambios-servicio,
+.btn-guardar-cambios-solicitud,
+.btn-guardar-cambios-usuario {
+    background-color: #4caf50;
+}
